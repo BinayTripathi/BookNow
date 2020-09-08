@@ -21,10 +21,10 @@ INSERT INTO Restaurant_Table(id,table_name) VALUES (19,'table19');
 INSERT INTO Restaurant_Table(id,table_name) VALUES (20,'table20');
 
 
-INSERT INTO Restaurant_Slot(id,daily_slot) VALUES (10001,'11AM-1PM');
-INSERT INTO Restaurant_Slot(id,daily_slot) VALUES (10002,'1PM-3PM');
-INSERT INTO Restaurant_Slot(id,daily_slot) VALUES (10003,'3PM-5PM');
-INSERT INTO Restaurant_Slot(id,daily_slot) VALUES (10004,'5PM-7PM');
+INSERT INTO Restaurant_Slot(id,slot) VALUES (10001,'11AM-1PM');
+INSERT INTO Restaurant_Slot(id,slot) VALUES (10002,'1PM-3PM');
+INSERT INTO Restaurant_Slot(id,slot) VALUES (10003,'3PM-5PM');
+INSERT INTO Restaurant_Slot(id,slot) VALUES (10004,'5PM-7PM');
 
 INSERT INTO Table_slot (
 Select t.id , s.id from restaurant_table t, restaurant_slot s

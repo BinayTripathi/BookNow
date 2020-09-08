@@ -2,6 +2,7 @@ package com.binay.booknow.persistence.entity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -35,13 +36,13 @@ public class RestaurantTable {
 	@NotNull
 	String tableName;
 	
-	//@ManyToMany(fetch=FetchType.EAGER)
-	@ManyToMany(cascade = {
+	@ManyToMany(fetch=FetchType.LAZY)
+	/*@ManyToMany(cascade = {
 		    CascadeType.PERSIST,
 		    CascadeType.MERGE
-		})
+		})*/
 	 @JoinTable(name="TABLE_SLOT",
      joinColumns= {@JoinColumn(name="RESTAURANT_TABLE_ID", referencedColumnName = "ID")},
      inverseJoinColumns= {@JoinColumn(name="RESTAURANT_SLOT_ID" , referencedColumnName = "ID")})
-	private List<RestaurantSlot> restaurantSlots = new ArrayList<>();
+	private Set<RestaurantSlot> restaurantSlots;// = new ArrayList<>();
 }

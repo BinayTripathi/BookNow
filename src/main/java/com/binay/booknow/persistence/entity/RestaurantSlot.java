@@ -2,15 +2,19 @@ package com.binay.booknow.persistence.entity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.validation.constraints.NotNull;
+
+import lombok.Data;
 
 
 
@@ -22,16 +26,16 @@ import javax.validation.constraints.NotNull;
  */
 
 @Entity
+@Data
 public class RestaurantSlot {
 	
 	@Id
 	long id;
 	
 	@NotNull
-	@Enumerated(EnumType.STRING)
-	private DailySlot dailySlot;
+	private String slot;
 	
-	@ManyToMany(mappedBy="restaurantSlots")
-	private List<RestaurantTable> restaurantTables = new ArrayList<>();
+	@ManyToMany(mappedBy="restaurantSlots", fetch=FetchType.LAZY)
+	private Set<RestaurantTable> restaurantTables;// = new ArrayList<>();
 
 }
