@@ -34,6 +34,12 @@ logging:
     net:
       sf:
         ehcache: debug
+
+
+management:
+  endpoint:
+    health:
+      enabled: true
     
     
     
