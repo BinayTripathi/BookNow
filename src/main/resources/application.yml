@@ -1,6 +1,8 @@
 spring:
   application:
     name: BOOK-NOW
+  #flyway:
+    #locations: classpath:/db/migration/h2
   datasource:
     url: jdbc:h2:mem:booknow;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;
     platform: h2
@@ -15,6 +17,23 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: create
+    properties:
+      hibernate:
+        cache:
+          use_second_level_cache: true
+          region:
+            factory_class: org.hibernate.cache.ehcache.EhCacheRegionFactory
+          provider_class: net.sf.ehcache.hibernate.EhCacheProvider
+      javax:
+        persistence:
+          sharedCache:
+            mode: ENABLE_SELECTIVE
+            
+logging:
+  level:
+    net:
+      sf:
+        ehcache: debug
     
     
     

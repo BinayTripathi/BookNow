@@ -1,17 +1,14 @@
 package com.binay.booknow.persistence.entity;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.ManyToMany;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import lombok.Data;
@@ -24,9 +21,10 @@ import lombok.Data;
  * Entity to represent all slots in the resturant
  *
  */
-
+@Cacheable
 @Entity
 @Data
+@Table(indexes = { @Index(name = "slot_index", columnList = "slot", unique = true) })
 public class RestaurantSlot {
 	
 	@Id

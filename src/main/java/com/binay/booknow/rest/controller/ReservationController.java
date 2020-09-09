@@ -69,8 +69,29 @@ public class ReservationController {
 			@Valid @RequestBody CreateReservationRequest createReservation) throws ValidationException {
 
 		DeferredResult<ResponseEntity<CreateReservationResponse>> deferredResult = new DeferredResult<>();
+		
+		RestaurantTable resturantTable = tableBookingService.getResturantTableByName(createReservation.getTableName());
+		RestaurantSlot slotProvided = tableBookingService.getResturantSlotByTime(createReservation.getReservationTime());
+		TableBooking tableBooking = TableBooking.builder().contact(createReservation.getContact())
+				.personName(createReservation.getName()).reservationDate(createReservation.getReservationDate())
+				.restaurantSlot(slotProvided).restaurantTable(resturantTable).build();
+		
 
-		CreateReservationResponse createReservationResponse = tableBookingService.createReservation(createReservation);
+		Optional<TableBooking> tableBookingCompleted = tableBookingService.createReservation(tableBooking);
+		
+		CreateReservationResponse createReservationResponse = null;
+		if (!tableBookingCompleted.isPresent()) {
+			createReservationResponse = CreateReservationResponse.builder()
+					.id("0")
+					.bookingAvailability(BookingAvailability.UNAVAILABLE)
+					.build();
+		} else {
+			createReservationResponse = CreateReservationResponse.builder()
+					.id(String.valueOf(tableBookingCompleted.get().getId()))
+					.bookingAvailability(BookingAvailability.BOOKED)
+					.build();
+		}
+		
 		 //Create resource location
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                                     .path("/{id}")
@@ -80,8 +101,7 @@ public class ReservationController {
         ResponseEntity<CreateReservationResponse> reservationResponseEntity 
         		= ResponseEntity.created(location).body(createReservationResponse);
         deferredResult.setResult(reservationResponseEntity);
-		//deferredResult.setResult(new ResponseEntity(createReservationResponse, HttpStatus.CREATED));
-
+		
 		return deferredResult;
 	}
 

@@ -17,7 +17,7 @@ public interface ITableBookingService {
 	
 	public List<Object[]> getSlotAndTable(Date reservationDate);
 	
-	public CreateReservationResponse createReservation(CreateReservationRequest createReservation)
+	public Optional<TableBooking> createReservation(TableBooking tableBooking)
 			throws ValidationException;
 	
 	public TableBooking getReservationById(Long id);

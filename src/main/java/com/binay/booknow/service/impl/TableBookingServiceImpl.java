@@ -62,40 +62,29 @@ public class TableBookingServiceImpl implements ITableBookingService{
 	
 	
 	
-
-	@Transactional(isolation = Isolation.SERIALIZABLE)
-	public CreateReservationResponse createReservation(CreateReservationRequest createReservation)
+	//Table lock on criteria since inserts cannot be restricted by Unique contraint in the design
+	@Transactional(isolation = Isolation.SERIALIZABLE)   
+	public Optional<TableBooking> createReservation(TableBooking tableBookingToBeDone)
 			throws ValidationException {
 
-		String tableName = createReservation.getTableName();
-		Date reservationDate = createReservation.getReservationDate();
-		String reservationTime = createReservation.getReservationTime();
+		Optional<TableBooking> tableBookingDone = Optional.empty();
+		
+		String tableName = tableBookingToBeDone.getRestaurantTable().getTableName();
+		Date reservationDate = tableBookingToBeDone.getReservationDate();
+		String reservationTime = tableBookingToBeDone.getRestaurantSlot().getSlot();
 
+		//Check if a booking in same date,time and table exists
 		Optional<TableBooking> reservationByDateTableAndSlot = tableBookingRepository
 				.getReservationByDateTableAndSlot(reservationDate, tableName, reservationTime);
 
-		CreateReservationResponse createReservationResponse = null;
 		if (reservationByDateTableAndSlot.isPresent()) {
-			createReservationResponse = CreateReservationResponse.builder().id("0")
-					.bookingAvailability(BookingAvailability.UNAVAILABLE).build();
+			return tableBookingDone;
 		} else {
-
-			RestaurantTable resturantTable = restaurantTableRepository.findByTableName(tableName)
-					.orElseThrow(() -> new ValidationException("Incorrect table name provided : " + tableName));
-
-			RestaurantSlot slotProvided = restaurantSlotRepository.findBySlot(reservationTime).orElseThrow(
-					() -> new ValidationException("Incorrect reservation time provided : " + reservationTime));
-
-			TableBooking tableBooking = TableBooking.builder().contact(createReservation.getContact())
-					.personName(createReservation.getName()).reservationDate(reservationDate)
-					.restaurantSlot(slotProvided).restaurantTable(resturantTable).build();
-
-			TableBooking savedBooking = tableBookingRepository.save(tableBooking);
-			createReservationResponse = CreateReservationResponse.builder().id(String.valueOf(savedBooking.getId()))
-					.bookingAvailability(BookingAvailability.BOOKED).build();
+			TableBooking savedBooking = tableBookingRepository.save(tableBookingToBeDone);
+			tableBookingDone = Optional.of(savedBooking);
 		}
 
-		return createReservationResponse;
+		return tableBookingDone;
 	}
 	
 	
@@ -165,7 +154,7 @@ public class TableBookingServiceImpl implements ITableBookingService{
 
 	
 	
-	
+	//Row is read and locked and for read/modification/deletion to prevent phantom reads
 	@Transactional(isolation = Isolation.SERIALIZABLE)
 	public boolean deleteTableBooking(Long id) {
 
