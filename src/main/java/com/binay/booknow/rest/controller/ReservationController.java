@@ -1,5 +1,6 @@
 package com.binay.booknow.rest.controller;
 
+import java.net.URI;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -23,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.context.request.async.DeferredResult;
-
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.binay.booknow.persistence.entity.RestaurantSlot;
 import com.binay.booknow.persistence.entity.RestaurantTable;
@@ -70,7 +71,16 @@ public class ReservationController {
 		DeferredResult<ResponseEntity<CreateReservationResponse>> deferredResult = new DeferredResult<>();
 
 		CreateReservationResponse createReservationResponse = tableBookingService.createReservation(createReservation);
-		deferredResult.setResult(new ResponseEntity(createReservationResponse, HttpStatus.CREATED));
+		 //Create resource location
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                                    .path("/{id}")
+                                    .buildAndExpand(createReservationResponse.getId())
+                                    .toUri();
+        
+        ResponseEntity<CreateReservationResponse> reservationResponseEntity 
+        		= ResponseEntity.created(location).body(createReservationResponse);
+        deferredResult.setResult(reservationResponseEntity);
+		//deferredResult.setResult(new ResponseEntity(createReservationResponse, HttpStatus.CREATED));
 
 		return deferredResult;
 	}

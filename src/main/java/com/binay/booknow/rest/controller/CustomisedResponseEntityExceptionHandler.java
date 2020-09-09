@@ -63,13 +63,4 @@ public class CustomisedResponseEntityExceptionHandler extends ResponseEntityExce
 		return new ResponseEntity(commonExceptionResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
-	/*
-	 * @ExceptionHandler(TrancationNotFoundException.class) public final
-	 * ResponseEntity<Object>
-	 * handleUserNotFoundException(TrancationNotFoundException ex, WebRequest
-	 * request) throws Exception { CommonExceptionResponse commonExceptionResponse =
-	 * new CommonExceptionResponse(new Date(), ex.getMessage(),
-	 * request.getDescription(true)); return new
-	 * ResponseEntity(commonExceptionResponse, HttpStatus.NOT_FOUND); }
-	 */
 }
