@@ -14,6 +14,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.context.request.async.DeferredResult;
 
-import com.binay.booknow.persistence.dao.TableBookingDao;
+
 import com.binay.booknow.persistence.entity.RestaurantSlot;
 import com.binay.booknow.persistence.entity.RestaurantTable;
 import com.binay.booknow.persistence.entity.TableBooking;
@@ -36,12 +37,13 @@ import com.binay.booknow.rest.dto.UpdateReservationRequest;
 import com.binay.booknow.rest.exception.EtagMismatchException;
 import com.binay.booknow.rest.exception.EtagNotFoundException;
 import com.binay.booknow.rest.exception.ReservationNotFoundException;
+import com.binay.booknow.service.ITableBookingService;
 
 @RestController
 public class ReservationController {
 
 	@Autowired
-	TableBookingDao tableBookingDao;
+	ITableBookingService tableBookingService;
 
 	@GetMapping(path = "/v1/availableSlots/{date}")
 	public DeferredResult<List<AvailableSlotResponse>> getAllAvailabilityOnDate(
@@ -49,7 +51,7 @@ public class ReservationController {
 
 		DeferredResult<List<AvailableSlotResponse>> deferredResult = new DeferredResult<>();
 
-		List<Object[]> slotAndTable = tableBookingDao.getSlotAndTable(date);
+		List<Object[]> slotAndTable = tableBookingService.getSlotAndTable(date);
 
 		List<AvailableSlotResponse> availability = slotAndTable.stream().map(entry -> {
 			return AvailableSlotResponse.builder().availableTime((String) entry[1]).availableDate(date)
@@ -67,18 +69,18 @@ public class ReservationController {
 
 		DeferredResult<ResponseEntity<CreateReservationResponse>> deferredResult = new DeferredResult<>();
 
-		CreateReservationResponse createReservationResponse = tableBookingDao.createReservation(createReservation);
+		CreateReservationResponse createReservationResponse = tableBookingService.createReservation(createReservation);
 		deferredResult.setResult(new ResponseEntity(createReservationResponse, HttpStatus.CREATED));
 
 		return deferredResult;
 	}
 
-	@GetMapping(path = "/v1/reservation/{id}")
+	@GetMapping(path = "/v1/reservations/{id}")
 	public DeferredResult<ResponseEntity<FetchReservationResponse>> getReservationById(@PathVariable Long id) {
 
 		DeferredResult<ResponseEntity<FetchReservationResponse>> deferredResult = new DeferredResult<>();
 
-		TableBooking tableBooking = tableBookingDao.getReservationById(id);
+		TableBooking tableBooking = tableBookingService.getReservationById(id);
 		if (null == tableBooking) {
 			throw new ReservationNotFoundException("No reservation found for id : " + id);
 		}
@@ -96,13 +98,13 @@ public class ReservationController {
 		return deferredResult;
 	}
 
-	@GetMapping(path = "/v1/reservations/{date}")
+	@GetMapping(path = "/v1/reservation/{date}")
 	public DeferredResult<ResponseEntity<List<FetchReservationResponse>>> getReservationsByDate(
 			@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date date) {
 
 		DeferredResult<ResponseEntity<List<FetchReservationResponse>>> deferredResult = new DeferredResult<>();
 
-		Optional<List<TableBooking>> tableBookingOptional = tableBookingDao.getReservationByDate(date);
+		Optional<List<TableBooking>> tableBookingOptional = tableBookingService.getReservationByDate(date);
 
 		List<FetchReservationResponse> reservationList = Collections.EMPTY_LIST;
 		if (tableBookingOptional.isPresent()) {
@@ -129,7 +131,7 @@ public class ReservationController {
 
 		DeferredResult<ResponseEntity<CreateReservationResponse>> deferredResult = new DeferredResult<>();
 
-		TableBooking tableBooking = tableBookingDao.getReservationById(id);
+		TableBooking tableBooking = tableBookingService.getReservationById(id);
 		if (null == tableBooking) {
 			throw new ReservationNotFoundException("No reservation found for id : " + id);
 		}
@@ -148,24 +150,26 @@ public class ReservationController {
 		
 		
 		boolean updateTableDateTime = false;
-		if(tableBooking.getReservationDate().compareTo(updateReservationRequest.getReservationDate()) != 0) {
+		if(tableBooking.getReservationDate().getDate() != updateReservationRequest.getReservationDate().getDate()
+				|| tableBooking.getReservationDate().getMonth() != updateReservationRequest.getReservationDate().getMonth()
+				|| tableBooking.getReservationDate().getYear() != updateReservationRequest.getReservationDate().getYear()) {
 			tableBooking.setReservationDate(updateReservationRequest.getReservationDate());
 			updateTableDateTime = true;
 		}
 		
 		if (tableBooking.getRestaurantSlot().getSlot().compareTo(updateReservationRequest.getReservationTime()) !=0) {
-			RestaurantSlot resturantSlot = tableBookingDao.getResturantSlotByTime(updateReservationRequest.getReservationTime());
+			RestaurantSlot resturantSlot = tableBookingService.getResturantSlotByTime(updateReservationRequest.getReservationTime());
 			tableBooking.setRestaurantSlot(resturantSlot);
 			updateTableDateTime = true;
 		}
 		
 		if (tableBooking.getRestaurantTable().getTableName().compareTo(updateReservationRequest.getTableName()) !=0) {
-			RestaurantTable resturantTable = tableBookingDao.getResturantTableByName(updateReservationRequest.getTableName());
+			RestaurantTable resturantTable = tableBookingService.getResturantTableByName(updateReservationRequest.getTableName());
 			tableBooking.setRestaurantTable(resturantTable);
 			updateTableDateTime = true;
 		}
 
-		TableBooking updateTableBooking = tableBookingDao.updateTableBooking(tableBooking, updateTableDateTime);
+		TableBooking updateTableBooking = tableBookingService.updateTableBooking(tableBooking, updateTableDateTime);
 		
 		CreateReservationResponse reservationUpdateResponse = null;
 		if(null != updateTableBooking) {
@@ -184,5 +188,24 @@ public class ReservationController {
 
 		return deferredResult;
 	}
+	
+	
+	@DeleteMapping(path = "/v1/reservations/{id}")
+	public DeferredResult<ResponseEntity<CreateReservationResponse>> deleteReservationById(@PathVariable Long id) {
+
+		DeferredResult<ResponseEntity<CreateReservationResponse>> deferredResult = new DeferredResult<>();
+
+		tableBookingService.deleteTableBooking(id);
+		
+		CreateReservationResponse deleteReservationResponse = CreateReservationResponse.builder()
+											.id("0")
+											.bookingAvailability(BookingAvailability.UNRESERVED)
+											.build();
+
+		deferredResult.setResult(new ResponseEntity(deleteReservationResponse,HttpStatus.OK));
+
+		return deferredResult;
+	}
+	
 
 }

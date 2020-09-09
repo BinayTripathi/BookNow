@@ -2,8 +2,11 @@ package com.binay.booknow.rest.exception;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class CommonExceptionResponse {
 
+	@JsonFormat(pattern="yyyy-MM-dd")
 	private Date timestamp;
     private String message;
     private String details;

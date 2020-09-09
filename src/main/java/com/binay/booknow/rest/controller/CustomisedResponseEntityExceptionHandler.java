@@ -33,7 +33,7 @@ public class CustomisedResponseEntityExceptionHandler extends ResponseEntityExce
 	}
 
 	@ExceptionHandler(EtagMismatchException.class)
-	public final ResponseEntity<CommonExceptionResponse> handleEtagErrorException(ReservationNotFoundException ex,
+	public final ResponseEntity<CommonExceptionResponse> handleEtagErrorException(EtagMismatchException ex,
 			HttpServletResponse response, WebRequest request) throws Exception {
 			CommonExceptionResponse commonExceptionResponse = new CommonExceptionResponse(new Date(), ex.getMessage(),
 					request.getDescription(false));
@@ -41,7 +41,7 @@ public class CustomisedResponseEntityExceptionHandler extends ResponseEntityExce
 	}
 	
 	@ExceptionHandler(EtagNotFoundException.class)
-	public final ResponseEntity<CommonExceptionResponse> handleEtagMissingException(ReservationNotFoundException ex,
+	public final ResponseEntity<CommonExceptionResponse> handleEtagMissingException(EtagNotFoundException ex,
 			HttpServletResponse response, WebRequest request) throws Exception {
 			CommonExceptionResponse commonExceptionResponse = new CommonExceptionResponse(new Date(), ex.getMessage(),
 					request.getDescription(false));
@@ -59,7 +59,7 @@ public class CustomisedResponseEntityExceptionHandler extends ResponseEntityExce
 	@ExceptionHandler(Exception.class)
 	public final ResponseEntity<Object> handleAllException(Exception ex, WebRequest request) throws Exception {
 		CommonExceptionResponse commonExceptionResponse = new CommonExceptionResponse(new Date(), ex.getMessage(),
-				request.getDescription(true));
+				request.getDescription(false));
 		return new ResponseEntity(commonExceptionResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 

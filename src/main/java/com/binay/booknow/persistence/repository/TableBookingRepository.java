@@ -33,6 +33,7 @@ public interface TableBookingRepository extends JpaRepository<TableBooking, Long
 	
 	
 	Optional<List<TableBooking>> getByReservationDate(Date reservationDate);
+	Optional<TableBooking> findById(Long id);
 
 }
 

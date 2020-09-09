@@ -1,25 +1,17 @@
-package com.binay.booknow.persistence.dao;
+package com.binay.booknow.service.impl;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import javax.annotation.PostConstruct;
-import javax.persistence.EntityManager;
-import javax.persistence.OptimisticLockException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
 import javax.xml.bind.ValidationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.binay.booknow.persistence.entity.DailySlot;
 import com.binay.booknow.persistence.entity.RestaurantSlot;
 import com.binay.booknow.persistence.entity.RestaurantTable;
 import com.binay.booknow.persistence.entity.TableBooking;
@@ -29,12 +21,24 @@ import com.binay.booknow.persistence.repository.TableBookingRepository;
 import com.binay.booknow.rest.dto.BookingAvailability;
 import com.binay.booknow.rest.dto.CreateReservationRequest;
 import com.binay.booknow.rest.dto.CreateReservationResponse;
+import com.binay.booknow.rest.exception.ReservationNotFoundException;
+import com.binay.booknow.service.ITableBookingService;
 
 import lombok.extern.slf4j.Slf4j;
 
-@Component
+
+
+/**
+ * 
+ * @author Binay
+ * 
+ * DAO for handling all database related operations
+ *
+ */
+
+@Service
 @Slf4j
-public class TableBookingDao {
+public class TableBookingServiceImpl implements ITableBookingService{
 
 	@Autowired
 	TableBookingRepository tableBookingRepository;
@@ -45,31 +49,7 @@ public class TableBookingDao {
 	@Autowired
 	RestaurantSlotRepository restaurantSlotRepository;
 
-	/*
-	 * public void getSlotAndTable1() {
-	 * 
-	 * Query query1 = entityManager
-	 * .createQuery("SELECT t.tableName,s.dailySlot FROM RestaurantTable t join  t.restaurantSlots s"
-	 * );
-	 * 
-	 * List<Object[]> resultSet = query1.getResultList();
-	 * log.info("Result size : {} ", resultSet.size()); for (Object[] result :
-	 * resultSet) // Result represents a row of 2 arrays
-	 * log.info("RestaurantTable : {} , RestaurantSlot  :{}", result[0], result[1]);
-	 * 
-	 * String query =
-	 * "SELECT table,slot FROM TABLE_SLOT st, RestaurantTable t, RestaurantSlot s  minus select Restaurant_table_id, restaurant_slot_id from table_booking"
-	 * ; Query createNativeQuery = entityManager.createNativeQuery(query); List
-	 * resultList = createNativeQuery.getResultList();
-	 * System.out.println(resultList);
-	 * 
-	 * String query2 = "SELECT t,s FROM RestaurantSlot s join RestaurantTable t";
-	 * Query createNativeQuery2 = entityManager.createNativeQuery(query,
-	 * RestaurantTable.class); List resultList2 = createNativeQuery.getResultList();
-	 * System.out.println(resultList2);
-	 * 
-	 * }
-	 */
+	
 
 	public List<Object[]> getSlotAndTable(Date reservationDate) {
 
@@ -78,6 +58,10 @@ public class TableBookingDao {
 		return allFreeTableAndSlotForDate;
 
 	}
+	
+	
+	
+	
 
 	@Transactional(isolation = Isolation.SERIALIZABLE)
 	public CreateReservationResponse createReservation(CreateReservationRequest createReservation)
@@ -113,48 +97,86 @@ public class TableBookingDao {
 
 		return createReservationResponse;
 	}
+	
+	
+	
+	
 
 	public TableBooking getReservationById(Long id) {
 
-		return tableBookingRepository.getOne(id);
+		return tableBookingRepository.findById(id)
+				.orElseThrow(() -> new ReservationNotFoundException("No reservation found with id :" + id));
 	}
+	
+	
+	
 
 	public Optional<List<TableBooking>> getReservationByDate(Date reservationDate) {
 
 		return tableBookingRepository.getByReservationDate(reservationDate);
 	}
 	
+	
+	
+
 	public RestaurantTable getResturantTableByName(String tableName) throws ValidationException {
-		
+
 		RestaurantTable resturantTable = restaurantTableRepository.findByTableName(tableName)
 				.orElseThrow(() -> new ValidationException("Incorrect table name provided : " + tableName));
-		
+
 		return resturantTable;
 	}
+
+	
 	
 	
 	public RestaurantSlot getResturantSlotByTime(String reservationTime) throws ValidationException {
-		RestaurantSlot slotProvided = restaurantSlotRepository.findBySlot(reservationTime).orElseThrow(
-				() -> new ValidationException("Incorrect reservation time provided : " + reservationTime));
-		
+		RestaurantSlot slotProvided = restaurantSlotRepository.findBySlot(reservationTime)
+				.orElseThrow(() -> new ValidationException("Incorrect reservation time provided : " + reservationTime));
+
 		return slotProvided;
 	}
+
+	
 	
 	public TableBooking updateTableBooking(TableBooking tableBooking, boolean updateTableDateTime) {
-		
+
 		TableBooking updatedTableBooking = null;
-		
-		//If there is change in table, date, time - check for availablility
-		if(updateTableDateTime) {
-			
+
+		// If there is change in table, date, time - check for availablility
+		if (updateTableDateTime) {
+
+			Optional<TableBooking> dateTimeTableNotAvailableOptional = tableBookingRepository
+					.getReservationByDateTableAndSlot(tableBooking.getReservationDate(),
+							tableBooking.getRestaurantTable().getTableName(),
+							tableBooking.getRestaurantSlot().getSlot());
+
+			if (dateTimeTableNotAvailableOptional.isPresent())
+				return updatedTableBooking;
 		}
 		try {
-		updatedTableBooking = tableBookingRepository.save(tableBooking);
-		} catch(ObjectOptimisticLockingFailureException ex) {
+			updatedTableBooking = tableBookingRepository.save(tableBooking);
+		} catch (ObjectOptimisticLockingFailureException ex) {
 			log.error("Optimistic lock exception - Update failed");
 		}
-		
+
 		return updatedTableBooking;
+	}
+
+	
+	
+	
+	@Transactional(isolation = Isolation.SERIALIZABLE)
+	public boolean deleteTableBooking(Long id) {
+
+		boolean isUnReserved = true;
+
+		if (tableBookingRepository.existsById(id))
+			tableBookingRepository.deleteById(id);
+		else
+			throw new ReservationNotFoundException("No reservation found with id :" + id);
+
+		return isUnReserved;
 	}
 
 }
