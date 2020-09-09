@@ -6,12 +6,14 @@ import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
+import javax.persistence.OptimisticLockException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.xml.bind.ValidationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Isolation;
@@ -120,6 +122,39 @@ public class TableBookingDao {
 	public Optional<List<TableBooking>> getReservationByDate(Date reservationDate) {
 
 		return tableBookingRepository.getByReservationDate(reservationDate);
+	}
+	
+	public RestaurantTable getResturantTableByName(String tableName) throws ValidationException {
+		
+		RestaurantTable resturantTable = restaurantTableRepository.findByTableName(tableName)
+				.orElseThrow(() -> new ValidationException("Incorrect table name provided : " + tableName));
+		
+		return resturantTable;
+	}
+	
+	
+	public RestaurantSlot getResturantSlotByTime(String reservationTime) throws ValidationException {
+		RestaurantSlot slotProvided = restaurantSlotRepository.findBySlot(reservationTime).orElseThrow(
+				() -> new ValidationException("Incorrect reservation time provided : " + reservationTime));
+		
+		return slotProvided;
+	}
+	
+	public TableBooking updateTableBooking(TableBooking tableBooking, boolean updateTableDateTime) {
+		
+		TableBooking updatedTableBooking = null;
+		
+		//If there is change in table, date, time - check for availablility
+		if(updateTableDateTime) {
+			
+		}
+		try {
+		updatedTableBooking = tableBookingRepository.save(tableBooking);
+		} catch(ObjectOptimisticLockingFailureException ex) {
+			log.error("Optimistic lock exception - Update failed");
+		}
+		
+		return updatedTableBooking;
 	}
 
 }

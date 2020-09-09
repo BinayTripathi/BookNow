@@ -15,6 +15,8 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.binay.booknow.rest.exception.CommonExceptionResponse;
+import com.binay.booknow.rest.exception.EtagMismatchException;
+import com.binay.booknow.rest.exception.EtagNotFoundException;
 import com.binay.booknow.rest.exception.ReservationNotFoundException;
 
 @ControllerAdvice
@@ -22,20 +24,36 @@ import com.binay.booknow.rest.exception.ReservationNotFoundException;
 public class CustomisedResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
 	@Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(
-                  MethodArgumentNotValidException ex, HttpHeaders headers,  HttpStatus status, WebRequest request) {
-               CommonExceptionResponse commonExceptionResponse =
-                         new  CommonExceptionResponse(new Date(),"Invalid  Arguement", ex.getBindingResult().toString());
-           
-           return new ResponseEntity(commonExceptionResponse,  HttpStatus.BAD_REQUEST);
-    }
+	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+			HttpHeaders headers, HttpStatus status, WebRequest request) {
+		CommonExceptionResponse commonExceptionResponse = new CommonExceptionResponse(new Date(), "Invalid  Arguement",
+				ex.getBindingResult().toString());
+
+		return new ResponseEntity(commonExceptionResponse, HttpStatus.BAD_REQUEST);
+	}
+
+	@ExceptionHandler(EtagMismatchException.class)
+	public final ResponseEntity<CommonExceptionResponse> handleEtagErrorException(ReservationNotFoundException ex,
+			HttpServletResponse response, WebRequest request) throws Exception {
+			CommonExceptionResponse commonExceptionResponse = new CommonExceptionResponse(new Date(), ex.getMessage(),
+					request.getDescription(false));
+    		return new ResponseEntity(commonExceptionResponse ,  HttpStatus.PRECONDITION_FAILED);
+	}
 	
+	@ExceptionHandler(EtagNotFoundException.class)
+	public final ResponseEntity<CommonExceptionResponse> handleEtagMissingException(ReservationNotFoundException ex,
+			HttpServletResponse response, WebRequest request) throws Exception {
+			CommonExceptionResponse commonExceptionResponse = new CommonExceptionResponse(new Date(), ex.getMessage(),
+					request.getDescription(false));
+    		return new ResponseEntity(commonExceptionResponse ,  HttpStatus.BAD_REQUEST);
+	}
+
 	@ExceptionHandler(ReservationNotFoundException.class)
-	public final CommonExceptionResponse handleUserNotFoundException(ReservationNotFoundException ex,
+	public final ResponseEntity<CommonExceptionResponse> handleUserNotFoundException(ReservationNotFoundException ex,
 			HttpServletResponse response, WebRequest request) throws Exception {
 		CommonExceptionResponse commonExceptionResponse = new CommonExceptionResponse(new Date(), ex.getMessage(),
 				request.getDescription(false));
-		return commonExceptionResponse;
+		return new ResponseEntity(commonExceptionResponse ,  HttpStatus.NOT_FOUND);
 	}
 
 	@ExceptionHandler(Exception.class)
@@ -45,13 +63,13 @@ public class CustomisedResponseEntityExceptionHandler extends ResponseEntityExce
 		return new ResponseEntity(commonExceptionResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
-
-
-	/*@ExceptionHandler(TrancationNotFoundException.class)
-	public final ResponseEntity<Object> handleUserNotFoundException(TrancationNotFoundException ex, WebRequest request)
-			throws Exception {
-		CommonExceptionResponse commonExceptionResponse = new CommonExceptionResponse(new Date(), ex.getMessage(),
-				request.getDescription(true));
-		return new ResponseEntity(commonExceptionResponse, HttpStatus.NOT_FOUND);
-	}*/
+	/*
+	 * @ExceptionHandler(TrancationNotFoundException.class) public final
+	 * ResponseEntity<Object>
+	 * handleUserNotFoundException(TrancationNotFoundException ex, WebRequest
+	 * request) throws Exception { CommonExceptionResponse commonExceptionResponse =
+	 * new CommonExceptionResponse(new Date(), ex.getMessage(),
+	 * request.getDescription(true)); return new
+	 * ResponseEntity(commonExceptionResponse, HttpStatus.NOT_FOUND); }
+	 */
 }
