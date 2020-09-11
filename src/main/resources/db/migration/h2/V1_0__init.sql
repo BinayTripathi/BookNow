@@ -8,4 +8,4 @@ create index table_booking_index on table_booking (reservation_date, restaurant_
 alter table table_slot add constraint FKcwrj5oldo7lfduoqslbqpomyc foreign key (restaurant_slot_id) references restaurant_slot
 alter table table_slot add constraint FK2lqoit4rl477p3g0ix4uut9qr foreign key (restaurant_table_id) references restaurant_table
 alter table table_booking add constraint FKsonmpcge9l0yu7j4qvnujn8kf foreign key (restaurant_slot_id) references restaurant_slot
---alter table table_booking add constraint FK8fjn0knpeiq2lfsc49hbpd7e6 foreign key (restaurant_table_id) references restaurant_table
+alter table table_booking add constraint FK8fjn0knpeiq2lfsc49hbpd7e6 foreign key (restaurant_table_id) references restaurant_table

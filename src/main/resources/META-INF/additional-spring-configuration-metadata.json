@@ -1,0 +1,10 @@
+{"properties": [{
+  "name": "booknow.dateformat",
+  "type": "java.lang.String",
+  "description": "Date format for accepting response as well as storing data in DB"
+},
+{
+  "name": "booknow.threadPoolSize",
+  "type": "java.lang.Integer",
+  "description": "Thread pool size for parallelism"
+}]}

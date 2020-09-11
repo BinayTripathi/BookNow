@@ -29,7 +29,7 @@ public interface TableBookingRepository extends JpaRepository<TableBooking, Long
 			+ "where not exists "
 			+ "(SELECT t1.tableName,s1.slot from TableBooking tb join tb.restaurantTable t1 join tb.restaurantSlot s1 "
 			+ "where tb.reservationDate = :onDate  and t.tableName = t1.tableName and s.slot = s1.slot)")
-	List<Object[]> getAllFreeTableAndSlotForDate(@Param("onDate") Date onDate);
+	List<String[]> getAllFreeTableAndSlotForDate(@Param("onDate") Date onDate);
 	
 	
 	Optional<List<TableBooking>> getByReservationDate(Date reservationDate);

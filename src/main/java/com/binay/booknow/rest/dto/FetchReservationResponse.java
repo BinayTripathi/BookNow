@@ -2,6 +2,7 @@ package com.binay.booknow.rest.dto;
 
 import java.util.Date;
 
+import com.binay.booknow.ApplicationConstants;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.Builder;
@@ -15,7 +16,7 @@ public class FetchReservationResponse {
 	String name;
 	String contact;
 	
-	@JsonFormat(pattern="yyyy-MM-dd")
+	@JsonFormat(pattern=ApplicationConstants.ACCEPTED_DATE_FORMAT)
 	Date reservationDate;
 	
 	String reservationTime;

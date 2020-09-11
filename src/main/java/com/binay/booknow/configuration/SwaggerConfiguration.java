@@ -19,7 +19,6 @@ public class SwaggerConfiguration {
                  DEFAULT_CONTACT, "Apache 2.0",  "http://www.apache.org/licenses/LICENSE-2.0");
          
        static String[] producerConsumer = new String[] {"Application/Json" ,  "Application/XML"};
-       //Set<String> DEFAULT_PRODUCER_CONSUMER = new  HashSet<String>(Arrays.asList(producerConsumer));
        
        
        

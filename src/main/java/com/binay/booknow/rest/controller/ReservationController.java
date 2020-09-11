@@ -5,6 +5,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
@@ -45,33 +48,77 @@ public class ReservationController {
 
 	@Autowired
 	ITableBookingService tableBookingService;
+	
+	//@Autowired
+	//ExecutorService executorService;
+	
+	
 
 	@GetMapping(path = "/v1/availableSlots/{date}")
-	public DeferredResult<List<AvailableSlotResponse>> getAllAvailabilityOnDate(
+	public DeferredResult<ResponseEntity<List<AvailableSlotResponse>>> getAllAvailabilityOnDate(
 			@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date date) {
 
-		DeferredResult<List<AvailableSlotResponse>> deferredResult = new DeferredResult<>();
+		DeferredResult<ResponseEntity<List<AvailableSlotResponse>>> deferredResult = new DeferredResult<>();
 
-		List<Object[]> slotAndTable = tableBookingService.getSlotAndTable(date);
+		List<String[]> slotAndTable = tableBookingService.getFreeSlotAndTable(date);
 
 		List<AvailableSlotResponse> availability = slotAndTable.stream().map(entry -> {
 			return AvailableSlotResponse.builder().availableTime((String) entry[1]).availableDate(date)
 					.tableName((String) entry[0]).build();
 		}).collect(Collectors.toList());
 
-		// ResponseEntity.
-		deferredResult.setResult(availability);
+		
+		deferredResult.setResult(ResponseEntity.ok(availability));
 		return deferredResult;
 	}
+	
+	
+	
+	
 
 	@PostMapping(path = "/v1/reservations")
 	public DeferredResult<ResponseEntity<CreateReservationResponse>> createReservation(
-			@Valid @RequestBody CreateReservationRequest createReservation) throws ValidationException {
+			@Valid @RequestBody CreateReservationRequest createReservation) throws Throwable {
 
 		DeferredResult<ResponseEntity<CreateReservationResponse>> deferredResult = new DeferredResult<>();
 		
-		RestaurantTable resturantTable = tableBookingService.getResturantTableByName(createReservation.getTableName());
-		RestaurantSlot slotProvided = tableBookingService.getResturantSlotByTime(createReservation.getReservationTime());
+		CompletableFuture<RestaurantTable> resturantTableFuture = CompletableFuture.supplyAsync( () -> {
+			try {
+				return tableBookingService.getResturantTableByName(createReservation.getTableName());
+			} catch (ValidationException e) {
+				throw new CompletionException(e); 
+			}
+		}) ;
+				
+				
+		CompletableFuture<RestaurantSlot> restaurantSlotFuture = CompletableFuture.supplyAsync(() -> {
+			try {
+				return tableBookingService.getResturantSlotByTime(createReservation.getReservationTime());
+			} catch (ValidationException e) {
+				throw new CompletionException(e); 
+			}
+		});
+		
+		
+		RestaurantTable resturantTable = null;
+	    try {
+	    	resturantTable = resturantTableFuture.join();
+	    }
+	    catch(CompletionException ex) {	       
+	            throw ex.getCause();
+	    }	        
+
+
+		RestaurantSlot slotProvided = null;
+		 try {
+			 slotProvided = restaurantSlotFuture.join();
+	    }
+	    catch(CompletionException ex) {	       
+	            throw ex.getCause();	        
+	    }
+		
+		
+		
 		TableBooking tableBooking = TableBooking.builder().contact(createReservation.getContact())
 				.personName(createReservation.getName()).reservationDate(createReservation.getReservationDate())
 				.restaurantSlot(slotProvided).restaurantTable(resturantTable).build();
@@ -104,6 +151,8 @@ public class ReservationController {
 		
 		return deferredResult;
 	}
+	
+	
 
 	@GetMapping(path = "/v1/reservations/{id}")
 	public DeferredResult<ResponseEntity<FetchReservationResponse>> getReservationById(@PathVariable Long id) {
@@ -172,7 +221,7 @@ public class ReservationController {
 		}
 		
 		if(!ifMatchValue.equals("\"" + tableBooking.getVersion() + "\"")) {
-			throw new EtagMismatchException("Etag not found");
+			throw new EtagMismatchException("Expired etag provided");
 		}
 		
 		tableBooking.setContact(updateReservationRequest.getContact());

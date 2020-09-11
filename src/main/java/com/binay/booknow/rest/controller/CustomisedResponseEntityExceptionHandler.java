@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -54,6 +55,14 @@ public class CustomisedResponseEntityExceptionHandler extends ResponseEntityExce
 		CommonExceptionResponse commonExceptionResponse = new CommonExceptionResponse(new Date(), ex.getMessage(),
 				request.getDescription(false));
 		return new ResponseEntity(commonExceptionResponse ,  HttpStatus.NOT_FOUND);
+	}
+	
+	@ExceptionHandler(ObjectOptimisticLockingFailureException.class)
+	public final ResponseEntity<CommonExceptionResponse> handleConcurrentUpdateException(ObjectOptimisticLockingFailureException ex,
+			HttpServletResponse response, WebRequest request) throws Exception {
+		CommonExceptionResponse commonExceptionResponse = new CommonExceptionResponse(new Date(), ex.getMessage(),
+				request.getDescription(false));
+		return new ResponseEntity(commonExceptionResponse ,  HttpStatus.CONFLICT);
 	}
 
 	@ExceptionHandler(Exception.class)
