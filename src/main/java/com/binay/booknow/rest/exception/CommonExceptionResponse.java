@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class CommonExceptionResponse {
 
-	@JsonFormat(pattern="yyyy-MM-dd")
+	@JsonFormat(pattern="yyyy-MM-dd hh:mm:ss")
 	private Date timestamp;
     private String message;
     private String details;

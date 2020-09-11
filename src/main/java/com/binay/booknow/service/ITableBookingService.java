@@ -11,6 +11,7 @@ import com.binay.booknow.persistence.entity.RestaurantTable;
 import com.binay.booknow.persistence.entity.TableBooking;
 import com.binay.booknow.rest.dto.CreateReservationRequest;
 import com.binay.booknow.rest.dto.CreateReservationResponse;
+import com.binay.booknow.rest.dto.UpdateReservationRequest;
 
 
 /**
@@ -48,7 +49,8 @@ public interface ITableBookingService {
 	public RestaurantSlot getResturantSlotByTime(String reservationTime) throws ValidationException;
 	
 	
-	public TableBooking updateTableBooking(TableBooking tableBooking, boolean updateTableDateTime);
+	public TableBooking updateTableBooking(Long id, UpdateReservationRequest updateReservationRequest, String eTag ) 
+			throws ValidationException;
 	
 	
 	public boolean deleteTableBooking(Long id);
