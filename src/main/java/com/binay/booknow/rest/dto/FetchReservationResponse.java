@@ -16,8 +16,7 @@ public class FetchReservationResponse {
 	String name;
 	String contact;
 	
-	@JsonFormat(pattern=ApplicationConstants.ACCEPTED_DATE_FORMAT)
-	Date reservationDate;
+	String reservationDate;
 	
 	String reservationTime;
 	String tableName;

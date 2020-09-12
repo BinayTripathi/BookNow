@@ -2,6 +2,8 @@ package com.binay.booknow.rest.dto;
 
 import java.util.Date;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import com.binay.booknow.ApplicationConstants;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -16,8 +18,8 @@ public class AvailableSlotResponse {
 	
 	String tableName;
 	
-	@JsonFormat(pattern=ApplicationConstants.ACCEPTED_DATE_FORMAT)
-	Date availableDate;
+	//Date availableDate;
+	String dateAvailable;
 	
 	String availableTime;
 

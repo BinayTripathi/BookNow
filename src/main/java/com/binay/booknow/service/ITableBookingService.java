@@ -9,9 +9,12 @@ import javax.xml.bind.ValidationException;
 import com.binay.booknow.persistence.entity.RestaurantSlot;
 import com.binay.booknow.persistence.entity.RestaurantTable;
 import com.binay.booknow.persistence.entity.TableBooking;
+import com.binay.booknow.rest.dto.AvailableSlotResponse;
 import com.binay.booknow.rest.dto.CreateReservationRequest;
 import com.binay.booknow.rest.dto.CreateReservationResponse;
-import com.binay.booknow.rest.dto.UpdateReservationRequest;
+import com.binay.booknow.rest.dto.FetchReservationResponse;
+import com.binay.booknow.rest.dto.FetchReservationResponseWrapper;
+import com.binay.booknow.rest.dto.CreateReservationRequest;
 
 
 /**
@@ -23,12 +26,21 @@ import com.binay.booknow.rest.dto.UpdateReservationRequest;
  */
 public interface ITableBookingService {
 	
+	
 	/**
 	 * Get all free slot and table for a given date
 	 * @param reservationDate :  Date on which to check for all available slot and table
 	 * @return List of Objects array. 0th entry is the slot and 1st entry is the table name
 	 */
-	public List<String[]> getFreeSlotAndTable(Date reservationDate);
+	public List<AvailableSlotResponse> getFreeSlotAndTable(Date reservationDate);
+	
+	
+	
+	public FetchReservationResponseWrapper getReservation(Long id);
+	
+	
+	
+	public List<FetchReservationResponse> getReservation(Date reservationDate);	
 	
 	
 	/**
@@ -36,27 +48,14 @@ public interface ITableBookingService {
 	 * @param tableBooking {@link TableBooking}
 	 * @return returns an optional of TableBooking object incase booking is successful
 	 */
-	public Optional<TableBooking> createReservation(TableBooking tableBooking);
-	
-	public TableBooking getReservationById(Long id);
+	public CreateReservationResponse createReservation(CreateReservationRequest createReservation) throws Throwable;	
 	
 	
-	public Optional<List<TableBooking>> getReservationByDate(Date reservationDate);
-	
-	public RestaurantTable getResturantTableByName(String tableName) throws ValidationException;
-	
-	
-	public RestaurantSlot getResturantSlotByTime(String reservationTime) throws ValidationException;
-	
-	
-	public TableBooking updateTableBooking(Long id, UpdateReservationRequest updateReservationRequest, String eTag ) 
+	public CreateReservationResponse updateTableBooking(Long id, CreateReservationRequest updateReservationRequest, String eTag)
 			throws ValidationException;
 	
 	
-	public boolean deleteTableBooking(Long id);
-	
-	
-	
+	public CreateReservationResponse deleteTableBooking(Long id);	
 	
 
 }

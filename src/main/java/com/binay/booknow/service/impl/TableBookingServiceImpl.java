@@ -1,28 +1,34 @@
 package com.binay.booknow.service.impl;
 
+import static com.binay.booknow.ApplicationConstants.DATE_FORMATTER;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.ValidationException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import com.binay.booknow.ApplicationConstants;
 import com.binay.booknow.persistence.entity.RestaurantSlot;
 import com.binay.booknow.persistence.entity.RestaurantTable;
 import com.binay.booknow.persistence.entity.TableBooking;
-import com.binay.booknow.persistence.repository.RestaurantSlotRepository;
-import com.binay.booknow.persistence.repository.RestaurantTableRepository;
-import com.binay.booknow.persistence.repository.TableBookingRepository;
-import com.binay.booknow.rest.dto.UpdateReservationRequest;
+import com.binay.booknow.rest.dto.AvailableSlotResponse;
+import com.binay.booknow.rest.dto.BookingAvailability;
+import com.binay.booknow.rest.dto.CreateReservationRequest;
+import com.binay.booknow.rest.dto.CreateReservationResponse;
+import com.binay.booknow.rest.dto.FetchReservationResponse;
+import com.binay.booknow.rest.dto.FetchReservationResponseWrapper;
 import com.binay.booknow.rest.exception.EtagMismatchException;
-import com.binay.booknow.rest.exception.ReservationNotFoundException;
+import com.binay.booknow.service.ITableBookingCommandService;
+import com.binay.booknow.service.ITableBookingQueryService;
 import com.binay.booknow.service.ITableBookingService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -30,97 +36,146 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class TableBookingServiceImpl implements ITableBookingService {
-
+	
 	@Autowired
-	private TableBookingRepository tableBookingRepository;
-
+	ITableBookingQueryService tableBookingQueryService;
+	
 	@Autowired
-	private RestaurantTableRepository restaurantTableRepository;
+	ITableBookingCommandService tableBookingCommandService;
 
-	@Autowired
-	private RestaurantSlotRepository restaurantSlotRepository;
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<String[]> getFreeSlotAndTable(Date reservationDate) {
+	public List<AvailableSlotResponse> getFreeSlotAndTable(Date reservationDate) {
 
-		List<String[]> allFreeTableAndSlotForDate = tableBookingRepository
-				.getAllFreeTableAndSlotForDate(reservationDate);
+		List<String[]> freeSlotAndTable = tableBookingQueryService.getFreeSlotAndTable(reservationDate);
+		
+		
+		List<AvailableSlotResponse> allFreeTableAndSlotForDate = freeSlotAndTable.stream().map(record -> {
+			
+			String tableName = record[0];
+			String availableSlot =  record[1];
+			return AvailableSlotResponse.builder()
+					.dateAvailable(DATE_FORMATTER.format(reservationDate))
+					.availableTime(availableSlot)
+					.tableName(tableName)
+					.build();
+		}).collect(Collectors.toList());
+		
+		
 		return allFreeTableAndSlotForDate;
 
 	}
+	
+		
+	
+	public FetchReservationResponseWrapper getReservation(Long id) {
+
+		TableBooking tableBooking = tableBookingQueryService.getReservationById(id);
+		
+		FetchReservationResponse fetchReservationResponse = FetchReservationResponse.builder()
+				.id(String.valueOf(tableBooking.getId())).name(tableBooking.getPersonName())
+				.contact(tableBooking.getContact()).reservationDate(DATE_FORMATTER.format(tableBooking.getReservationDate()))
+				.reservationTime(tableBooking.getRestaurantSlot().getSlot())
+				.tableName(tableBooking.getRestaurantTable().getTableName()).build();
+		
+		String eTag = "\"" + tableBooking.getVersion() + "\"";
+		
+		return FetchReservationResponseWrapper.builder()
+				.fetchReservationResponse(fetchReservationResponse)
+				.eTag(eTag)
+				.build();
+	}
+	
+	
+
+	public List<FetchReservationResponse> getReservation(Date reservationDate) {
+
+		Optional<List<TableBooking>> tableBookingOptional = tableBookingQueryService.getReservationByDate(reservationDate);
+		
+		List<FetchReservationResponse> reservationList = Collections.EMPTY_LIST;
+		if (tableBookingOptional.isPresent()) {
+			reservationList = tableBookingOptional.get().stream().map(tableBooking -> {
+				FetchReservationResponse fetchReservationResponse = FetchReservationResponse.builder()
+						.id(String.valueOf(tableBooking.getId())).name(tableBooking.getPersonName())
+						.contact(tableBooking.getContact()).reservationDate(DATE_FORMATTER.format(tableBooking.getReservationDate()))
+						.reservationTime(tableBooking.getRestaurantSlot().getSlot())
+						.tableName(tableBooking.getRestaurantTable().getTableName()).build();
+				return fetchReservationResponse;
+			}).collect(Collectors.toList());
+		}
+		
+		return reservationList;
+	}
+	
+	
 
 	/**
 	 * {@inheritDoc}
+	 * @throws Throwable 
 	 */
-	// Pessimistic locking for concurrency control
-	// Table lock on criteria since inserts cannot be restricted by Unique contraint
-	// in the design
-	@Transactional(isolation = Isolation.SERIALIZABLE, timeout = ApplicationConstants.TRANSACTION_TIMEOUT_DURATION)
-	public Optional<TableBooking> createReservation(TableBooking tableBookingToBeDone) {
+	public CreateReservationResponse createReservation(CreateReservationRequest createReservation) throws Throwable {
 
-		Optional<TableBooking> tableBookingDone = Optional.empty();
-
-		String tableName = tableBookingToBeDone.getRestaurantTable().getTableName();
-		Date reservationDate = tableBookingToBeDone.getReservationDate();
-		String reservationTime = tableBookingToBeDone.getRestaurantSlot().getSlot();
-
-		// Check if a booking in same date,time and table exists -
-		// This locks all the rows for update
-		// So an update request cannot go on to update old entry to another entry that
-		// conflicts with this one
-		// If update reaches here first, then offcourse below query will tell that
-		// request time, time, slot is not available
-		Optional<TableBooking> reservationByDateTableAndSlot = tableBookingRepository
-				.getReservationByDateTableAndSlot(reservationDate, tableName, reservationTime);
-
-		if (reservationByDateTableAndSlot.isPresent()) {
-			return tableBookingDone;
+		CompletableFuture<RestaurantTable> resturantTableFuture = CompletableFuture.supplyAsync( () -> {
+			try {
+				return tableBookingQueryService.getResturantTableByName(createReservation.getTableName());
+			} catch (ValidationException e) {
+				throw new CompletionException(e); 
+			}
+		}) ;
+				
+				
+		CompletableFuture<RestaurantSlot> restaurantSlotFuture = CompletableFuture.supplyAsync(() -> {
+			try {
+				return tableBookingQueryService.getResturantSlotByTime(createReservation.getReservationTime());
+			} catch (ValidationException e) {
+				throw new CompletionException(e); 
+			}
+		});
+		
+		
+		RestaurantTable resturantTable = null;
+		RestaurantSlot slotProvided = null;
+	    try {
+	    	resturantTable = resturantTableFuture.join();
+	    	slotProvided = restaurantSlotFuture.join();
+	    }
+	    catch(CompletionException ex) {	       
+	            throw ex.getCause();
+	    }	        		
+		
+		TableBooking tableBooking = TableBooking.builder().contact(createReservation.getContact())
+				.personName(createReservation.getName()).reservationDate(createReservation.getReservationDate())
+				.restaurantSlot(slotProvided).restaurantTable(resturantTable).build();
+		
+		
+		Optional<TableBooking> tableBookingCompleted = tableBookingCommandService.createReservation(tableBooking);
+		
+		CreateReservationResponse createReservationResponse = null;
+		if (!tableBookingCompleted.isPresent()) {
+			createReservationResponse = CreateReservationResponse.builder()
+					.id("0")
+					.bookingAvailability(BookingAvailability.UNAVAILABLE)
+					.build();
 		} else {
-			TableBooking savedBooking = tableBookingRepository.save(tableBookingToBeDone);
-			tableBookingDone = Optional.of(savedBooking);
+			createReservationResponse = CreateReservationResponse.builder()
+					.id(String.valueOf(tableBookingCompleted.get().getId()))
+					.bookingAvailability(BookingAvailability.BOOKED)
+					.build();
 		}
-
-		return tableBookingDone;
+		
+		return createReservationResponse;
 	}
 
-	public TableBooking getReservationById(Long id) {
-
-		return tableBookingRepository.findById(id)
-				.orElseThrow(() -> new ReservationNotFoundException("No reservation found with id :" + id));
-	}
-
-	public Optional<List<TableBooking>> getReservationByDate(Date reservationDate) {
-
-		return tableBookingRepository.getByReservationDate(reservationDate);
-	}
-
-	public RestaurantTable getResturantTableByName(String tableName) throws ValidationException {
-
-		RestaurantTable resturantTable = restaurantTableRepository.findByTableName(tableName)
-				.orElseThrow(() -> new ValidationException("Incorrect table name provided : " + tableName));
-
-		return resturantTable;
-	}
-
-	public RestaurantSlot getResturantSlotByTime(String reservationTime) throws ValidationException {
-		RestaurantSlot slotProvided = restaurantSlotRepository.findBySlot(reservationTime)
-				.orElseThrow(() -> new ValidationException("Incorrect reservation time provided : " + reservationTime));
-
-		return slotProvided;
-	}
+	
 
 	// Optimistic locking for concurrency control
-	public TableBooking updateTableBooking(Long id, UpdateReservationRequest updateReservationRequest, String eTag)
+	public CreateReservationResponse updateTableBooking(Long id, CreateReservationRequest updateReservationRequest, String eTag)
 			throws ValidationException {
-
-		Optional<TableBooking> tableBookingOptional = tableBookingRepository.findById(id);
-		if (!tableBookingOptional.isPresent()) {
-			throw new ReservationNotFoundException("No reservation found for id : " + id);
-		}
-
-		TableBooking tableBooking = tableBookingOptional.get();
+		
+		TableBooking tableBooking = tableBookingQueryService.getReservationById(id);
+		
 		if (!eTag.equals("\"" + tableBooking.getVersion() + "\"")) {
 			throw new EtagMismatchException("Expired etag provided");
 		}
@@ -136,52 +191,74 @@ public class TableBookingServiceImpl implements ITableBookingService {
 		}
 
 		if (tableBooking.getRestaurantSlot().getSlot().compareTo(updateReservationRequest.getReservationTime()) != 0) {
-			RestaurantSlot resturantSlot = getResturantSlotByTime(updateReservationRequest.getReservationTime());
+			RestaurantSlot resturantSlot = tableBookingQueryService.getResturantSlotByTime(updateReservationRequest.getReservationTime());
 			tableBooking.setRestaurantSlot(resturantSlot);
 			updateTableDateTime = true;
 		}
 
 		if (tableBooking.getRestaurantTable().getTableName().compareTo(updateReservationRequest.getTableName()) != 0) {
-			RestaurantTable resturantTable = getResturantTableByName(updateReservationRequest.getTableName());
+			RestaurantTable resturantTable = tableBookingQueryService.getResturantTableByName(updateReservationRequest.getTableName());
 			tableBooking.setRestaurantTable(resturantTable);
 			updateTableDateTime = true;
 		}
 
 		TableBooking updatedTableBooking = null;
 
-		// If there is change in table, date, time - check for availability
+		// If there is change in table, date, time - should be transactional create reservation
 		if (updateTableDateTime) {
-
-			Optional<TableBooking> dateTimeTableOccupiedOptional = tableBookingRepository
-					.getReservationByDateTableAndSlot(updateReservationRequest.getReservationDate(),
-							updateReservationRequest.getTableName(), updateReservationRequest.getReservationTime());
+			
+			Optional<TableBooking> tableBookingCompleted = tableBookingCommandService.createReservation(tableBooking);
 
 			// Proceed only if no booking available
-			if (dateTimeTableOccupiedOptional.isPresent()) {
-				log.info("Seat is unavailable for update: " + dateTimeTableOccupiedOptional.get());
-				return updatedTableBooking; // null returned
+			if (!tableBookingCompleted.isPresent()) {
+				log.info("Seat is unavailable for update on request date and slot");
+			} else {
+				updatedTableBooking = tableBookingCompleted.get();
+			}
+		} else {
+			try {
+				updatedTableBooking = tableBookingCommandService.updateTableBooking(tableBooking);
+			} catch (ObjectOptimisticLockingFailureException ex) {
+				log.error("Optimistic lock exception - Update failed ");
+				throw ex;
 			}
 		}
-		try {
-			updatedTableBooking = tableBookingRepository.save(tableBooking);
-		} catch (ObjectOptimisticLockingFailureException ex) {
-			log.error("Optimistic lock exception - Update failed ");
-			throw ex;
+		
+		
+		CreateReservationResponse reservationUpdateResponse = null;
+		if(null != updatedTableBooking) {
+			reservationUpdateResponse = CreateReservationResponse.builder()
+					.bookingAvailability(BookingAvailability.BOOKED)
+					.id(String.valueOf(updatedTableBooking.getId()))
+					.build();
+		} else {
+			reservationUpdateResponse = CreateReservationResponse.builder()
+					.bookingAvailability(BookingAvailability.UNAVAILABLE)
+					.id("0")
+					.build();
 		}
-
-		return updatedTableBooking;
+		
+		return reservationUpdateResponse;
+		
 	}
 
-	public boolean deleteTableBooking(Long id) {
+	
+	//If an update is called after delete - ObjectOptimisticLockingFailureException happens
+	public CreateReservationResponse deleteTableBooking(Long id) {
 
-		boolean isUnReserved = true;
-
-		if (tableBookingRepository.existsById(id))
-			tableBookingRepository.deleteById(id);
-		else
-			throw new ReservationNotFoundException("No reservation found with id :" + id);
-
-		return isUnReserved;
+		tableBookingCommandService.deleteTableBooking(id);
+		
+		CreateReservationResponse deleteReservationResponse = CreateReservationResponse.builder()
+				.id("0")
+				.bookingAvailability(BookingAvailability.UNRESERVED)
+				.build();
+		
+		
+		return deleteReservationResponse;
 	}
+
+
+
+	
 
 }
