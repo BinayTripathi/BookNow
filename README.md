@@ -1,3 +1,4 @@
+
 # Book-Now - 
 ## RestaurantBookingSystem - With concurrency control
 
@@ -13,27 +14,24 @@ The repository consists of projects as below:
 
 | # |Project Name | Project detail| Environment |
 | ---| ---  | ---            | --- |
-| 1 | AccountBrowser| SpringBoot  | [![.SpringBoot framework](https://img.shields.io/badge/Springboot-2.2.6.RELEASE_Framework-blue.svg?style=plastic)](https://start.spring.io/)|
+| 1 | BookNow| Restaurant Table Reservation System   | [![.SpringBoot framework](https://img.shields.io/badge/Springboot-2.2.6.RELEASE_Framework-blue.svg?style=plastic)](https://start.spring.io/)|
 
 ### Summary
 
 The overall objective of the applications :
 ```
->   To demonstrate JPA and Rest API creation. 
+>   A web-aware restaurant reservation application 
 
->   HATEOAS has been used with the REST APIs - so that we clickable links from Account to Transactions are available
+>   Comphrensive concurrency control such that conflicts in reservation is prevented.
 
->   Further used Flyway for database versioning.
-
->   Sample Unit/Integration test using JUNIT5 has been added.
+>   Production-ready code with loosely coupled highly maintainable design.
 
 ```
 
 
 ### Application design detail
 
->   The application consists of 
-*  A client executable jar (AccountBrowser-0.0.1-SNAPSHOT.jar)
+>   
 
 ### Setup detail
 
