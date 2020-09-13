@@ -24,9 +24,9 @@ The repository consists of projects as below:
 
 The overall objective of the applications :
 
->   A web-aware restaurant reservation application 
+>   A web-aware Restaurant Reservation Rpplication 
 
->   Comphrensive concurrency control such that conflicts in reservation is prevented.
+>   Comphrensive concurrency control such that conflicts in reservation are prevented.
 
 >   Production-ready code with loosely coupled highly maintainable design.
 
