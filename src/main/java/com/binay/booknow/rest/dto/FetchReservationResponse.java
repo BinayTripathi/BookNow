@@ -5,11 +5,13 @@ import java.util.Date;
 import com.binay.booknow.ApplicationConstants;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
+@AllArgsConstructor
 public class FetchReservationResponse {
 
 	String id;

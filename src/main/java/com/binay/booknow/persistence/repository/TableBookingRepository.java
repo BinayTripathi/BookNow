@@ -20,7 +20,9 @@ public interface TableBookingRepository extends JpaRepository<TableBooking, Long
 	
 
 	@Query("SELECT t from TableBooking tb join tb.restaurantTable t join tb.restaurantSlot s where tb.reservationDate = :reservDate and t.tableName = :tableName and s.slot= :slot")
-	Optional<TableBooking> getReservationByDateTableAndSlot(@Param("reservDate") Date reservDate,
+	//@Query("SELECT tb.id from TableBooking tb join tb.restaurantTable t join tb.restaurantSlot s where tb.reservationDate = :reservDate and t.tableName = :tableName and s.slot= :slot")
+	//@Query(value = "Select count(tb.id) from table_booking tb , Restaurant_slot s, Restaurant_table t where tb.restaurant_slot_id = s.id and tb.restaurant_table_id = t.id", nativeQuery = true)
+	Optional<Long> getReservationByDateTableAndSlot(@Param("reservDate") Date reservDate,
 			@Param("tableName") String tableName, @Param("slot") String slot);
 	
 	

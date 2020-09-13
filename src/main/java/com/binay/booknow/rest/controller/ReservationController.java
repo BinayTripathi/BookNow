@@ -12,6 +12,13 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.xml.bind.ValidationException;
 
+import static com.binay.booknow.ApplicationConstants.URI_VI_CREATE_RESERVATION;
+import static com.binay.booknow.ApplicationConstants.URI_V1_GET_AVAILABLE_RESERVATION_ON_DATE;
+import static com.binay.booknow.ApplicationConstants.URI_VI_GET_RESERVATIONS_BY_ID;
+import static com.binay.booknow.ApplicationConstants.URI_VI_GET_RESERVATIONS_BY_DATE;
+import static com.binay.booknow.ApplicationConstants.URI_VI_UPDATE_RESERVATIONS_BY_ID;
+import static com.binay.booknow.ApplicationConstants.URI_VI_DELETE_RESERVATIONS_BY_ID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -50,7 +57,7 @@ public class ReservationController {
 	
 	
 
-	@GetMapping(path = "/v1/availableSlots/{date}")
+	@GetMapping(path = URI_V1_GET_AVAILABLE_RESERVATION_ON_DATE)
 	public DeferredResult<ResponseEntity<List<AvailableSlotResponse>>> getAllAvailabilityOnDate(
 			@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date date) {
 
@@ -65,7 +72,7 @@ public class ReservationController {
 	
 	
 
-	@PostMapping(path = "/v1/reservations")
+	@PostMapping(path = URI_VI_CREATE_RESERVATION)
 	public DeferredResult<ResponseEntity<CreateReservationResponse>> createReservation(
 			@Valid @RequestBody CreateReservationRequest createReservation) throws Throwable {
 
@@ -98,7 +105,7 @@ public class ReservationController {
 	
 	
 
-	@GetMapping(path = "/v1/reservations/{id}")
+	@GetMapping(path = URI_VI_GET_RESERVATIONS_BY_ID)
 	public DeferredResult<ResponseEntity<FetchReservationResponse>> getReservationById(@PathVariable Long id) {
 
 		FetchReservationResponseWrapper fetchReservationResponseWrapper = tableBookingService.getReservation(id);
@@ -116,7 +123,7 @@ public class ReservationController {
 	
 	
 
-	@GetMapping(path = "/v1/reservation/{date}")
+	@GetMapping(path = URI_VI_GET_RESERVATIONS_BY_DATE)
 	public DeferredResult<ResponseEntity<List<FetchReservationResponse>>> getReservationsByDate(
 			@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date date) {
 
@@ -133,7 +140,7 @@ public class ReservationController {
 	
 	
 	
-	@PutMapping(path = "/v1/reservations/{id}")
+	@PutMapping(path = URI_VI_UPDATE_RESERVATIONS_BY_ID)
 	public DeferredResult<ResponseEntity<CreateReservationResponse>> updateReservation(WebRequest webRequest,
 			@PathVariable Long id,
 			@RequestBody CreateReservationRequest updateReservationRequest) throws ValidationException {
@@ -159,7 +166,7 @@ public class ReservationController {
 	
 	
 	
-	@DeleteMapping(path = "/v1/reservations/{id}")
+	@DeleteMapping(path = URI_VI_DELETE_RESERVATIONS_BY_ID)
 	public DeferredResult<ResponseEntity<CreateReservationResponse>> deleteReservation(@PathVariable Long id) {
 
 		

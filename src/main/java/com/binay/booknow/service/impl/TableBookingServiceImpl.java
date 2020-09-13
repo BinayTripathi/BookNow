@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import javax.xml.bind.ValidationException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
@@ -175,39 +176,44 @@ public class TableBookingServiceImpl implements ITableBookingService {
 			throws ValidationException {
 		
 		TableBooking tableBooking = tableBookingQueryService.getReservationById(id);
-		
+				
 		if (!eTag.equals("\"" + tableBooking.getVersion() + "\"")) {
 			throw new EtagMismatchException("Expired etag provided");
 		}
 
+		
+		TableBooking tableBookingToUpdate = new TableBooking();
+		BeanUtils.copyProperties(tableBooking, tableBookingToUpdate);
+		
 		boolean updateTableDateTime = false;
-		if (tableBooking.getReservationDate().getDate() != updateReservationRequest.getReservationDate().getDate()
-				|| tableBooking.getReservationDate().getMonth() != updateReservationRequest.getReservationDate()
+		if (tableBookingToUpdate.getReservationDate().getDate() != updateReservationRequest.getReservationDate().getDate()
+				|| tableBookingToUpdate.getReservationDate().getMonth() != updateReservationRequest.getReservationDate()
 						.getMonth()
-				|| tableBooking.getReservationDate().getYear() != updateReservationRequest.getReservationDate()
+				|| tableBookingToUpdate.getReservationDate().getYear() != updateReservationRequest.getReservationDate()
 						.getYear()) {
-			tableBooking.setReservationDate(updateReservationRequest.getReservationDate());
+			tableBookingToUpdate.setReservationDate(updateReservationRequest.getReservationDate());
 			updateTableDateTime = true;
 		}
 
 		if (tableBooking.getRestaurantSlot().getSlot().compareTo(updateReservationRequest.getReservationTime()) != 0) {
 			RestaurantSlot resturantSlot = tableBookingQueryService.getResturantSlotByTime(updateReservationRequest.getReservationTime());
-			tableBooking.setRestaurantSlot(resturantSlot);
+			tableBookingToUpdate.setRestaurantSlot(resturantSlot);
 			updateTableDateTime = true;
 		}
 
 		if (tableBooking.getRestaurantTable().getTableName().compareTo(updateReservationRequest.getTableName()) != 0) {
 			RestaurantTable resturantTable = tableBookingQueryService.getResturantTableByName(updateReservationRequest.getTableName());
-			tableBooking.setRestaurantTable(resturantTable);
+			tableBookingToUpdate.setRestaurantTable(resturantTable);
 			updateTableDateTime = true;
 		}
+
 
 		TableBooking updatedTableBooking = null;
 
 		// If there is change in table, date, time - should be transactional create reservation
 		if (updateTableDateTime) {
 			
-			Optional<TableBooking> tableBookingCompleted = tableBookingCommandService.createReservation(tableBooking);
+			Optional<TableBooking> tableBookingCompleted = tableBookingCommandService.createReservation(tableBookingToUpdate);
 
 			// Proceed only if no booking available
 			if (!tableBookingCompleted.isPresent()) {
@@ -217,7 +223,7 @@ public class TableBookingServiceImpl implements ITableBookingService {
 			}
 		} else {
 			try {
-				updatedTableBooking = tableBookingCommandService.updateTableBooking(tableBooking);
+				updatedTableBooking = tableBookingCommandService.updateTableBooking(tableBookingToUpdate);
 			} catch (ObjectOptimisticLockingFailureException ex) {
 				log.error("Optimistic lock exception - Update failed ");
 				throw ex;

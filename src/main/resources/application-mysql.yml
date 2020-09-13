@@ -1,0 +1,8 @@
+spring:
+  flyway:
+    locations: classpath:/db/migration/mysql
+  datasource:
+    url: jdbc:mysql://localhost:3306/BookNowDB
+    username: root
+    password: password
+    
