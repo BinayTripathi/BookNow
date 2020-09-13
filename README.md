@@ -81,7 +81,7 @@ test  . No password.]
 
 Having any trouble? Please read out this [documentation](https://github.com/BinayTripathi/AccountBrowser/blob/master/README.md) or [contact](mailto:binay.mckv@gmail.com) and to sort it out.
 
-  [![HitCount](http://hits.dwyl.com/BinayTripathi/BookNow.svg)](http://hits.dwyl.com/BinayTripathi/BookNow)| ![GitHub contributors](https://img.shields.io/github/contributors/BinayTripathi/AccountBrowser)|
+[![HitCount](http://hits.dwyl.com/BinayTripathi/BookNow.svg)](http://hits.dwyl.com/BinayTripathi/BookNow) ![GitHub contributors](https://img.shields.io/github/contributors/BinayTripathi/AccountBrowser)|
  | --- | --- |
 
 
