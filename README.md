@@ -1,6 +1,7 @@
 
 
 
+
 # Book-Now - 
 ## RestaurantBookingSystem - With concurrency control
 
@@ -42,15 +43,15 @@ The overall objective of the applications :
 
 > 4.  Other features include(to ensure a near-production-readiness)
 
->>	1.	Flyway for database versioning
+>			1.	Flyway for database versioning
 	
->>	2.	MySQL/H2 configured based on profile.
+>			2.	MySQL/H2 configured based on profile.
 	
->>	3.	Adequate integration/unit test (79% code coverage).
+>			3.	Adequate integration/unit test (79% code coverage).
 	
->>	4.	Health endpoints exposed through actuators.
+>			4.	Health endpoints exposed through actuators.
 	
->>	5.	Thorough error handling and logging
+>			5.	Thorough error handling and logging
 
 
 
