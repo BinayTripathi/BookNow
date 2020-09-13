@@ -1,6 +1,8 @@
 spring:
   application:
-    name: BOOK-NOW    
+    name: BOOK-NOW
+  profiles:
+    active: "h2"
   jpa:
     show-sql: true
     hibernate:

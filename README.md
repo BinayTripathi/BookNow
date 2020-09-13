@@ -60,14 +60,14 @@ The overall objective of the applications :
 > Download/install   	
 >	1.	[![Maven](https://img.shields.io/badge/Mavan-3.6.3-blue.svg?style=plastic)](https://maven.apache.org/download.cgi) to build project and run test suite
 >   
->   2. [![Java](https://img.shields.io/badge/Java-1.8_-blue.svg?style=plastic)](https://www.oracle.com/java/technologies/javase-jdk8-downloads.html) to run the project
+>   2.  [![Java](https://img.shields.io/badge/Java-1.8_-blue.svg?style=plastic)](https://www.oracle.com/java/technologies/javase-jdk8-downloads.html) to run the project
 >   
->	3. [![STS](https://img.shields.io/badge/Spring_Tool_Suite-STS-blue.svg?style=plastic)](https://spring.io/tools) to run/debug the applications
+>	3.  [![STS](https://img.shields.io/badge/Spring_Tool_Suite-STS-blue.svg?style=plastic)](https://spring.io/tools) to run/debug the applications
 >	
 
 ##### Project Setup detail
 
->   1. Please clone or download the repository from [![github](https://img.shields.io/badge/git-hub-blue.svg?style=plastic)]https://github.com/BinayTripathi/BookNow) 
+>   1. Please clone or download the repository from [![github](https://img.shields.io/badge/git-hub-blue.svg?style=plastic)](https://github.com/BinayTripathi/BookNow)
 >   
 #####  To build / run the application
 
@@ -75,12 +75,12 @@ The overall objective of the applications :
 >   
 >   2. Enter following command to build the project : **mvn clean install** 
 >   
->   3. Enter following command to run the project with its default configuration: **java -jar target\BookNow-0.0.1-SNAPSHOT.jar** (-Dspring.profiles.active=mysql/h2)
+>   3. Enter following command to run the project with its default configuration: **java -jar target\BookNow-0.0.1-SNAPSHOT.jar** (-Dspring.profiles.active=mysql)
 >   
->   4. To check im-momory database browse to **http://localhost:8080/booknow/h2-console/login.jsp** 
+>   4. To check in-memory database (default is h2) browse to **http://localhost:8080/booknow/h2-console/login.jsp** 
 
-     **JDBC url** : jdbc:h2:mem:accdet;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;  
-     **User id** :  test  . 
+     JDBC url : jdbc:h2:mem:accdet;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;  
+     User id :  test  . 
      No password.
 
 >   
