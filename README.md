@@ -34,18 +34,23 @@ The overall objective of the applications :
 ### Application highlights
 
 
->   Loosely coupled design with ***Command Query Responsibility Seggration (CQRS)*** and strict adherence to SOLID principles.
+> 1.    Loosely coupled design with *Command Query Responsibility Seggration (CQRS)* and strict adherence to SOLID principles.
 
->   Implementation ***Optimistic*** as well as ***Pessimistic*** concurrency control to prevent conflict and inconsistency and simultaneously reducing performance hits because of database locks.
+>2.   Implementation *Optimistic* as well as *Pessimistic* concurrency control to prevent conflict and inconsistency and simultaneouly reducing performance hits because of database locks.
 
->   ***L2-Cache (using ehcache)*** enabled in the database besides appropriate database indexing to further augment performance.
+> 3.  *L2-Cache* (using ehcache) enabled in the database besides appropriate database indexing to further augment performance.
 
->   Other features include(to ensure a near-production-readiness)
-		 -             Flyway for database versioning
-		 -             MySQL/H2 configured based on profile.
-		 -             Adequate integration/unit test (79% code coverage). 
-		 -             Health endpoints exposed through actuators.
-		 -            Thorough error handling and logging
+> 4.  Other features include(to ensure a near-production-readiness)
+
+>>	1.	Flyway for database versioning
+	
+>>	2.	MySQL/H2 configured based on profile.
+	
+>>	3.	Adequate integration/unit test (79% code coverage).
+	
+>>	4.	Health endpoints exposed through actuators.
+	
+>>	5.	Thorough error handling and logging
 
 
 
