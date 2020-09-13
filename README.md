@@ -1,7 +1,7 @@
-# AccountBrowser
+# Book-Now - 
+## RestaurantBookingSystem - With concurrency control
 
-
-[![Spring_Boot Framework](https://img.shields.io/badge/Springboot-2.2.6.RELEASE_Framework-blue.svg?style=plastic)](https://start.spring.io/) |[![Java](https://img.shields.io/badge/Java-java-blue.svg?style=plastic)](https://www.oracle.com/java/technologies/javase-jdk8-downloads.html) | ![GitHub language count](https://img.shields.io/github/languages/count/BinayTripathi/ServiceVictoria-ChildrenInQueue.svg) | ![GitHub top language](https://img.shields.io/github/languages/top/BinayTripathi/ServiceVictoria-ChildrenInQueue.svg) |![GitHub repo size in bytes](https://img.shields.io/github/repo-size/BinayTripathi/ServiceVictoria-ChildrenInQueue.svg) 
+[![Spring_Boot Framework](https://img.shields.io/badge/Springboot-2.3.3.RELEASE_Framework-blue.svg?style=plastic)](https://start.spring.io/) |[![Java](https://img.shields.io/badge/Java-1.8-blue.svg?style=plastic)](https://www.oracle.com/java/technologies/javase-jdk8-downloads.html) | ![GitHub language count](https://img.shields.io/github/languages/count/BinayTripathi/ServiceVictoria-ChildrenInQueue.svg) | ![GitHub top language](https://img.shields.io/github/languages/top/BinayTripathi/ServiceVictoria-ChildrenInQueue.svg) |![GitHub repo size in bytes](https://img.shields.io/github/repo-size/BinayTripathi/ServiceVictoria-ChildrenInQueue.svg) 
 | --- | ---          | ---        | ---      | ---        | 
 
 ---------------------------------------
@@ -13,7 +13,7 @@ The repository consists of projects as below:
 
 | # |Project Name | Project detail| Environment |
 | ---| ---  | ---            | --- |
-| 1 | AccountBrowser| Project with JPA, HATEOAS & REST | [![.SpringBoot framework](https://img.shields.io/badge/Springboot-2.2.6.RELEASE_Framework-blue.svg?style=plastic)](https://start.spring.io/)|
+| 1 | AccountBrowser| SpringBoot  | [![.SpringBoot framework](https://img.shields.io/badge/Springboot-2.2.6.RELEASE_Framework-blue.svg?style=plastic)](https://start.spring.io/)|
 
 ### Summary
 
@@ -82,5 +82,6 @@ Having any trouble? Please read out this [documentation](https://github.com/Bina
 
   [![HitCount](http://hits.dwyl.com/BinayTripathi/AccountBrowser.svg)](http://hits.dwyl.com/BinayTripathi/AccountBrowser) | ![GitHub contributors](https://img.shields.io/github/contributors/BinayTripathi/AccountBrowser)|
  | --- | --- |
+
 
 
