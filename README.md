@@ -46,7 +46,7 @@ The overall objective of the applications :
 	>   Health endpoints exposed through actuators.
 	>   Thorough error handling and logging
 
-``
+```
 
 
 ### Setup detail
