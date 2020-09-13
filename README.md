@@ -20,18 +20,18 @@ The repository consists of projects as below:
 ### Summary
 
 The overall objective of the applications :
-```
+
 >   A web-aware restaurant reservation application 
 
 >   Comphrensive concurrency control such that conflicts in reservation is prevented.
 
 >   Production-ready code with loosely coupled highly maintainable design.
 
-```
+
 
 
 ### Application highlights
-```
+
 
 >   Loosely coupled design with *Command Query Responsibility Seggration (CQRS)* and strict adherence to SOLID principles.
 
@@ -51,7 +51,7 @@ The overall objective of the applications :
 	
 	>   Thorough error handling and logging
 
-```
+
 
 ### Setup detail
 
@@ -67,7 +67,7 @@ The overall objective of the applications :
 
 ##### Project Setup detail
 
->   1. Please clone or download the repository from [![github](https://img.shields.io/badge/git-hub-blue.svg?style=plastic)](https://github.com/BinayTripathi/BookNow)
+>   1. Please clone or download the repository from [![github](https://img.shields.io/badge/github-BookNow-blue.svg?style=plastic)](https://github.com/BinayTripathi/BookNow)
 >   
 #####  To build / run the application
 
