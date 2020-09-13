@@ -58,7 +58,7 @@ public class TableBookingCommandServiceImpl implements ITableBookingCommandServi
 		// conflicts with this one
 		// If update reaches here first, then offcourse below query will tell that
 		// request time, time, slot is not available
-		Optional<Long> reservationByDateTableAndSlot = tableBookingRepository
+		Optional<TableBooking> reservationByDateTableAndSlot = tableBookingRepository
 				.getReservationByDateTableAndSlot(reservationDate, tableName, reservationTime);
 
 		if (reservationByDateTableAndSlot.isPresent()) {

@@ -20,9 +20,7 @@ public interface TableBookingRepository extends JpaRepository<TableBooking, Long
 	
 
 	@Query("SELECT t from TableBooking tb join tb.restaurantTable t join tb.restaurantSlot s where tb.reservationDate = :reservDate and t.tableName = :tableName and s.slot= :slot")
-	//@Query("SELECT tb.id from TableBooking tb join tb.restaurantTable t join tb.restaurantSlot s where tb.reservationDate = :reservDate and t.tableName = :tableName and s.slot= :slot")
-	//@Query(value = "Select count(tb.id) from table_booking tb , Restaurant_slot s, Restaurant_table t where tb.restaurant_slot_id = s.id and tb.restaurant_table_id = t.id", nativeQuery = true)
-	Optional<Long> getReservationByDateTableAndSlot(@Param("reservDate") Date reservDate,
+	Optional<TableBooking> getReservationByDateTableAndSlot(@Param("reservDate") Date reservDate,
 			@Param("tableName") String tableName, @Param("slot") String slot);
 	
 	
@@ -30,7 +28,8 @@ public interface TableBookingRepository extends JpaRepository<TableBooking, Long
 	@Query("SELECT t.tableName,s.slot FROM RestaurantTable t join  t.restaurantSlots s "
 			+ "where not exists "
 			+ "(SELECT t1.tableName,s1.slot from TableBooking tb join tb.restaurantTable t1 join tb.restaurantSlot s1 "
-			+ "where tb.reservationDate = :onDate  and t.tableName = t1.tableName and s.slot = s1.slot)")
+			+ "where tb.reservationDate = :onDate  and t.tableName = t1.tableName and s.slot = s1.slot)"
+			+ "  order by t.id")
 	List<String[]> getAllFreeTableAndSlotForDate(@Param("onDate") Date onDate);
 	
 	

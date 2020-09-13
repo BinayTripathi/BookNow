@@ -1,23 +1,18 @@
 package com.binay.booknow.rest.controller;
 
+import static com.binay.booknow.ApplicationConstants.URI_V1_GET_AVAILABLE_RESERVATION_ON_DATE;
+import static com.binay.booknow.ApplicationConstants.URI_VI_CREATE_RESERVATION;
+import static com.binay.booknow.ApplicationConstants.URI_VI_DELETE_RESERVATIONS_BY_ID;
+import static com.binay.booknow.ApplicationConstants.URI_VI_GET_RESERVATIONS_BY_DATE;
+import static com.binay.booknow.ApplicationConstants.URI_VI_GET_RESERVATIONS_BY_ID;
+import static com.binay.booknow.ApplicationConstants.URI_VI_UPDATE_RESERVATIONS_BY_ID;
+
 import java.net.URI;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
-import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 import javax.xml.bind.ValidationException;
-
-import static com.binay.booknow.ApplicationConstants.URI_VI_CREATE_RESERVATION;
-import static com.binay.booknow.ApplicationConstants.URI_V1_GET_AVAILABLE_RESERVATION_ON_DATE;
-import static com.binay.booknow.ApplicationConstants.URI_VI_GET_RESERVATIONS_BY_ID;
-import static com.binay.booknow.ApplicationConstants.URI_VI_GET_RESERVATIONS_BY_DATE;
-import static com.binay.booknow.ApplicationConstants.URI_VI_UPDATE_RESERVATIONS_BY_ID;
-import static com.binay.booknow.ApplicationConstants.URI_VI_DELETE_RESERVATIONS_BY_ID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -35,18 +30,13 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.binay.booknow.persistence.entity.RestaurantSlot;
-import com.binay.booknow.persistence.entity.RestaurantTable;
-import com.binay.booknow.persistence.entity.TableBooking;
 import com.binay.booknow.rest.dto.AvailableSlotResponse;
 import com.binay.booknow.rest.dto.BookingAvailability;
 import com.binay.booknow.rest.dto.CreateReservationRequest;
 import com.binay.booknow.rest.dto.CreateReservationResponse;
 import com.binay.booknow.rest.dto.FetchReservationResponse;
 import com.binay.booknow.rest.dto.FetchReservationResponseWrapper;
-import com.binay.booknow.rest.dto.CreateReservationRequest;
 import com.binay.booknow.rest.exception.EtagNotFoundException;
-import com.binay.booknow.rest.exception.ReservationNotFoundException;
 import com.binay.booknow.service.ITableBookingService;
 
 @RestController
