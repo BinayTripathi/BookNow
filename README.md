@@ -48,12 +48,13 @@ The overall objective of the applications :
 >	
 >			2. MySQL/H2 configured based on profile.
 >	
->			3. Adequate integration/unit test (79% code coverage).
+>			3. Health endpoints exposed through actuators.
 >	
->			4. Health endpoints exposed through actuators.
+>			4. Thorough error handling and logging
 >	
->			5. Thorough error handling and logging
+>			5. Adequate integration/unit test (79% code coverage).
 >
+> ![Alt text](img/Jacoco_CodeCoverage.JPG?raw=true "Code Coverage")
 
 
 ### Setup detail
