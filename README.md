@@ -8,7 +8,7 @@
 
 ---------------------------------------
 
-## Repository codebase
+## Repository code base
  
 The repository consists of projects as below:
 
@@ -40,14 +40,18 @@ The overall objective of the applications :
 >   *L2-Cache* (using ehcache) enabled in the database besides appropriate database indexing to further augment performance.
 
 >   Other features include(to ensure a near-production-readiness)
+
 	>   Flyway for database versioning
+	
 	>   MySQL/H2 configured based on profile.
+	
 	>   Adequate integration/unit test (79% code coverage).
+	
 	>   Health endpoints exposed through actuators.
+	
 	>   Thorough error handling and logging
 
 ```
-
 
 ### Setup detail
 
@@ -63,31 +67,33 @@ The overall objective of the applications :
 
 ##### Project Setup detail
 
->   1. Please clone or download the repository from [![github](https://img.shields.io/badge/git-hub-blue.svg?style=plastic)]https://github.com/BinayTripathi/AccountBrowser) 
+>   1. Please clone or download the repository from [![github](https://img.shields.io/badge/git-hub-blue.svg?style=plastic)]https://github.com/BinayTripathi/BookNow) 
 >   
 #####  To build / run the application
 
->   1. Open a new command prompt and browse to the root folder ( **AccountBrowser** ) of the application 
+>   1. Open a new command prompt and browse to the root folder ( **BookNow** ) of the application 
 >   
 >   2. Enter following command to build the project : **mvn clean install** 
 >   
->   3. Enter following command to run the project with its default configuration: **java -jar target\AccountBrowser-0.0.1-SNAPSHOT.jar**
+>   3. Enter following command to run the project with its default configuration: **java -jar target\BookNow-0.0.1-SNAPSHOT.jar** (-Dspring.profiles.active=mysql/h2)
 >   
->   4. To check im-momory database browse to **http://localhost:8080/h2-console/login.jsp**  [**JDBC url** : jdbc:h2:mem:accdet;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;  **User id** : 
-test  . No password.]
+>   4. To check im-momory database browse to **http://localhost:8080/booknow/h2-console/login.jsp** 
+
+     **JDBC url** : jdbc:h2:mem:accdet;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;  
+     **User id** :  test  . 
+     No password.
+
 >   
->   5. End point exposed check for accounts held by user  **http://localhost:8080/accounts/user/{userName}**  [Example : http://localhost:8080/accounts/user/user1 ] . 
+>   5. To view **Swagger documentation**  run the application and visit http://localhost:8080/booknow/swagger-ui.html#/reservation-controller
 >   
->   6. Response to above is json with all the accounts held by user if any else appropriate error is provided. **It also contains (HATEOS enabled) url associated with each account which can be clicked on the browser to see the transactions associated with that account as json**  
->   
->   7. Transactions for any account can also be obtained by directly checking for the end point **http://localhost:8080/transactions/account/{account-number}**  example http://localhost:8080/transactions/account/AC1
+
 
 
 
 ##### To open the project in Spring Tool Suite (or Eclipse)
 >   1. Open **Spring Tool Suite** .
 >   2. Select **File** ->  **Import** and then select **Existing Maven Projects**
->   3. Browse to  **AccountBrowser** select pom.xml and click **Finish** to import the project.
+>   3. Browse to  **BookNow** select pom.xml and click **Finish** to import the project.
 >   4. Run/Debug the project
 
 ### Support or Contact
