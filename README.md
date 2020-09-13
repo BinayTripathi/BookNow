@@ -2,8 +2,8 @@
 
 
 
-# Book-Now - 
-## RestaurantBookingSystem - With concurrency control
+# Book-Now 
+### RestaurantBookingSystem - With concurrency control
 
 [![Spring_Boot Framework](https://img.shields.io/badge/Springboot-2.3.3.RELEASE_Framework-blue.svg?style=plastic)](https://start.spring.io/) |[![Java](https://img.shields.io/badge/Java-1.8-blue.svg?style=plastic)](https://www.oracle.com/java/technologies/javase-jdk8-downloads.html) | ![GitHub language count](https://img.shields.io/github/languages/count/BinayTripathi/ServiceVictoria-ChildrenInQueue.svg) | ![GitHub top language](https://img.shields.io/github/languages/top/BinayTripathi/ServiceVictoria-ChildrenInQueue.svg) |![GitHub repo size in bytes](https://img.shields.io/github/repo-size/BinayTripathi/ServiceVictoria-ChildrenInQueue.svg) 
 | --- | ---          | ---        | ---      | ---        | 
@@ -44,15 +44,15 @@ The overall objective of the applications :
 > 4.  Other features include(to ensure a near-production-readiness)
 
 >			1. Flyway for database versioning
-	
+>	
 >			2. MySQL/H2 configured based on profile.
-	
+>	
 >			3. Adequate integration/unit test (79% code coverage).
-	
+>	
 >			4. Health endpoints exposed through actuators.
-	
+>	
 >			5. Thorough error handling and logging
-
+>
 
 
 ### Setup detail
