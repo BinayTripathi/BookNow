@@ -29,9 +29,12 @@ The overall objective of the applications :
 ```
 
 
-### Application design detail
+### Application highlights
+```
+>   Loosely coupled design with **Command Query Responsibility Seggration (CQRS)** and strict adherence to SOLID principles.
 
->   
+>   Implementation **Optimistic** as well as **Pessimistic** concurrency control to prevent conflict and inconsistency and at the same time maintain performnce 
+```
 
 ### Setup detail
 
@@ -78,7 +81,7 @@ test  . No password.]
 
 Having any trouble? Please read out this [documentation](https://github.com/BinayTripathi/AccountBrowser/blob/master/README.md) or [contact](mailto:binay.mckv@gmail.com) and to sort it out.
 
-  [![HitCount](http://hits.dwyl.com/BinayTripathi/AccountBrowser.svg)](http://hits.dwyl.com/BinayTripathi/AccountBrowser) | ![GitHub contributors](https://img.shields.io/github/contributors/BinayTripathi/AccountBrowser)|
+  [![HitCount](http://hits.dwyl.com/BinayTripathi/BookNow.svg)](http://hits.dwyl.com/BinayTripathi/BookNow)| ![GitHub contributors](https://img.shields.io/github/contributors/BinayTripathi/AccountBrowser)|
  | --- | --- |
 
 
