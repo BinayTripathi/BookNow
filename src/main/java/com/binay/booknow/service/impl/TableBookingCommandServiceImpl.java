@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.binay.booknow.ApplicationConstants;
+import com.binay.booknow.configuration.properties.BookNowProperties;
 import com.binay.booknow.persistence.entity.TableBooking;
 import com.binay.booknow.persistence.repository.RestaurantSlotRepository;
 import com.binay.booknow.persistence.repository.RestaurantTableRepository;
@@ -28,13 +29,6 @@ public class TableBookingCommandServiceImpl implements ITableBookingCommandServi
 	
 	@Autowired
 	private TableBookingRepository tableBookingRepository;
-
-	@Autowired
-	private RestaurantTableRepository restaurantTableRepository;
-
-	@Autowired
-	private RestaurantSlotRepository restaurantSlotRepository;
-	
 	
 
 	/**

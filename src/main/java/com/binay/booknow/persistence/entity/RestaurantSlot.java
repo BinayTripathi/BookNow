@@ -11,7 +11,11 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 
 
@@ -23,7 +27,9 @@ import lombok.Data;
  */
 @Cacheable
 @Entity
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 @Table(indexes = { @Index(name = "slot_index", columnList = "slot", unique = true) })
 public class RestaurantSlot {
 	

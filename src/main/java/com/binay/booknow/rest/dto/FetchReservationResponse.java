@@ -1,16 +1,16 @@
 package com.binay.booknow.rest.dto;
 
-import java.util.Date;
-
-import com.binay.booknow.ApplicationConstants;
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.binay.booknow.rest.dto.AvailableSlotResponse.AvailableSlotResponseBuilder;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor

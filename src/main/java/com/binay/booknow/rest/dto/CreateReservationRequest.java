@@ -7,17 +7,21 @@ import javax.validation.constraints.Future;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.binay.booknow.ApplicationConstants;
+import com.binay.booknow.rest.dto.AvailableSlotResponse.AvailableSlotResponseBuilder;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class CreateReservationRequest {
 	
 	Long id;
