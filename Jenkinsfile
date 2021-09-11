@@ -34,7 +34,7 @@ pipeline {
 
         stage('Artifact') {
           steps {
-            archiveArtifacts 'TestLog.txt'
+            archiveArtifacts 'Testlog.txt'
           }
         }
 
