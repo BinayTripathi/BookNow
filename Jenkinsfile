@@ -32,6 +32,12 @@ pipeline {
           }
         }
 
+        stage('Artifact') {
+          steps {
+            archiveArtifacts 'TestLog.txt'
+          }
+        }
+
       }
     }
 
