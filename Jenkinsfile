@@ -6,7 +6,7 @@ pipeline {
         stage('Build') {
           steps {
             echo 'Building'
-            sh '''/usr/share/maven/bin/mvn clean install'''
+            sh '''/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/JenkinsMaven/bin/mvn -B -DskipTests clean package'''
           }
         }
 
