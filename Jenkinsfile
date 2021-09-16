@@ -6,7 +6,7 @@ pipeline {
         stage('Build') {
           steps {
             echo 'Building'
-            sh '''mvn clean install'''
+            sh '''/usr/share/maven/bin/mvn clean install'''
           }
         }
 
